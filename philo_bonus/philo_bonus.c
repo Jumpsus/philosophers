@@ -43,7 +43,7 @@ int	run_thread(t_philo *philo)
 	philo->fork = sem_open(SEM_NAME, O_RDWR);
 	philo->key = sem_open(KEY_C, O_RDWR);
 	if (small_thread(philo, th))
-		return(2);
+		return (2);
 	sem_close(philo->heart);
 	sem_close(philo->fork);
 	sem_close(philo->key);
