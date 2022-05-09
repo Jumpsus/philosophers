@@ -15,12 +15,8 @@
 void	*check_die(void *input)
 {
 	t_philo		*philo;
-	sem_t		*fork;
-	sem_t		*key_card;
 
 	philo = (t_philo *)input;
-	fork = sem_open(SEM_NAME, O_RDWR);
-	key_card = sem_open(KEY_C, O_RDWR);
 	while (philo->alive)
 	{
 		if (time_diff(philo->last) >= philo->config.die)
@@ -29,25 +25,21 @@ void	*check_die(void *input)
 			if (philo->alive && time_diff(philo->last) >= philo->config.die)
 			{
 				philo->alive = 0;
-				sem_wait(key_card);
+				sem_wait(philo->key);
 				printf("%6d %3d died\n", time_diff(philo->start), philo->no);
 			}
 			sem_post(philo->heart);
 		}
 	}
-	release_fork(philo, fork);
-	sem_close(fork);
-	sem_close(key_card);
+	release_fork(philo, philo->fork);
 	return (0);
 }
 
 void	*check_finish(void *input)
 {
 	t_philo		*philo;
-	sem_t		*fork;
 
 	philo = (t_philo *)input;
-	fork = sem_open(SEM_NAME, O_RDWR);
 	while (philo->alive)
 	{
 		if ((philo->config.limit >= 0) && (
@@ -58,7 +50,6 @@ void	*check_finish(void *input)
 			sem_post(philo->heart);
 		}
 	}
-	release_fork(philo, fork);
-	sem_close(fork);
+	release_fork(philo, philo->fork);
 	return (0);
 }

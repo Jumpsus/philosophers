@@ -45,6 +45,8 @@ typedef struct s_philo
 	int			no;
 	int			left;
 	int			right;
+	sem_t		*key;
+	sem_t		*fork;
 	sem_t		*heart;
 	t_rouconf	config;
 	t_time		start;
@@ -73,4 +75,5 @@ void			*check_finish(void *input);
 char			*ft_itoa(int num);
 void			check_in(sem_t *key_card);
 void			genocide(pid_t *pid, int num);
+sem_t			*create_sem(int num, char *name);
 #endif

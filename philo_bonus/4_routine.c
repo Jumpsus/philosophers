@@ -97,18 +97,13 @@ void	r_sleep(t_philo *philo, sem_t *fork, sem_t *key_card)
 void	*routine(void *input)
 {
 	t_philo	*philo;
-	sem_t	*fork;
-	sem_t	*key_card;
 
 	philo = (t_philo *)input;
-	fork = sem_open(SEM_NAME, O_RDWR);
-	key_card = sem_open(KEY_C, O_RDWR);
 	while (philo->alive)
 	{
-		r_take_fork(philo, fork, key_card);
-		r_eat(philo, key_card);
-		r_sleep(philo, fork, key_card);
+		r_take_fork(philo, philo->fork, philo->key);
+		r_eat(philo, philo->key);
+		r_sleep(philo, philo->fork, philo->key);
 	}
-	sem_close(fork);
 	return (0);
 }

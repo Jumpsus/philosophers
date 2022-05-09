@@ -67,3 +67,23 @@ void	genocide(pid_t *pid, int num)
 		}
 	}
 }
+
+sem_t	*create_sem(int num, char *name)
+{
+	sem_t	*my_sem;
+
+	sem_unlink(name);
+	my_sem = sem_open(name, O_CREAT, S_IRUSR | S_IWUSR, num);
+	if (my_sem == SEM_FAILED)
+	{
+		printf("Failed to open semaphore");
+		return (NULL);
+	}
+	if (sem_close(my_sem) < 0)
+	{
+		printf("Failed to close semaphore");
+		sem_unlink(name);
+		return (NULL);
+	}
+	return (my_sem);
+}

@@ -12,15 +12,8 @@
 
 #include "philosophers.h"
 
-int	run_thread(t_philo *philo)
+int	small_thread(t_philo *philo, pthread_t *th)
 {
-	pthread_t	*th;
-	char		*id;
-
-	id = ft_itoa(philo->no - 1);
-	sem_unlink(id);
-	philo->heart = sem_open(id, O_CREAT, S_IRUSR | S_IWUSR, 1);
-	th = (pthread_t *)ft_calloc(sizeof(pthread_t), 3);
 	if (pthread_create(&th[0], NULL, &routine, philo) != 0)
 		return (1);
 	if (pthread_create(&th[1], NULL, &check_die, philo) != 0)
@@ -33,31 +26,31 @@ int	run_thread(t_philo *philo)
 		return (5);
 	if (pthread_join(th[2], NULL) != 0)
 		return (6);
+	return (0);
+}
+
+int	run_thread(t_philo *philo)
+{
+	pthread_t	*th;
+	char		*id;
+
+	th = (pthread_t *)ft_calloc(sizeof(pthread_t), 3);
+	if (!th)
+		return (1);
+	id = ft_itoa(philo->no - 1);
+	sem_unlink(id);
+	philo->heart = sem_open(id, O_CREAT, S_IRUSR | S_IWUSR, 1);
+	philo->fork = sem_open(SEM_NAME, O_RDWR);
+	philo->key = sem_open(KEY_C, O_RDWR);
+	if (small_thread(philo, th))
+		return(2);
 	sem_close(philo->heart);
+	sem_close(philo->fork);
+	sem_close(philo->key);
 	sem_unlink(id);
 	free(id);
 	free(th);
 	return (0);
-}
-
-sem_t	*create_sem(int num, char *name)
-{
-	sem_t	*my_sem;
-
-	sem_unlink(name);
-	my_sem = sem_open(name, O_CREAT, S_IRUSR | S_IWUSR, num);
-	if (my_sem == SEM_FAILED)
-	{
-		printf("Failed to open semaphore");
-		return (NULL);
-	}
-	if (sem_close(my_sem) < 0)
-	{
-		printf("Failed to close semaphore");
-		sem_unlink(name);
-		return (NULL);
-	}
-	return (my_sem);
 }
 
 void	multi_process(int num, t_philo *philo)
